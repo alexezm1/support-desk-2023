@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "support ticket app",
   "main": "server.js",
-  "type": "module",
   "scripts": {
-    "start": "node backend/server.mjs",
-    "server": "nodemon backend/server.mjs"
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js"
   },
   "author": "Alejandro Zamora",
   "license": "MIT",
