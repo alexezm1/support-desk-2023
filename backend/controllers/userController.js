@@ -1,11 +1,17 @@
 const bcrypt = require("bcryptjs");
 const pool = require("../config/db.js");
+const AsyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
 const {
-  checkUserEmails,
+  checkUserEmail,
   addUser,
   getUsersData,
 } = require("../queries/userQueries.js");
-const AsyncHandler = require("express-async-handler");
+
+// Generate JWT
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+};
 
 // @desc GET users
 // @route Route /api/users
@@ -33,7 +39,7 @@ const registerUser = AsyncHandler(async (req, res) => {
     }
 
     // Check if user already exists
-    const results = await pool.query(checkUserEmails, [email]);
+    const results = await pool.query(checkUserEmail, [email]);
     if (results.rows.length) {
       res.status(400);
       throw new Error("User already exists");
@@ -74,15 +80,19 @@ const registerUser = AsyncHandler(async (req, res) => {
 const loginUser = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await pool.query(checkUserEmails, [email]);
+  const user = await pool.query(checkUserEmail, [email]);
   const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
 
   // Check user and passwords match
-  if (user.rows[0].email && passwordMatch) {
+  if (user.rows.length && passwordMatch) {
     res.status(200).json({
       message: "Login Successfull",
       body: {
-        user: { name: user.rows[0].name, email: user.rows[0].email },
+        user: {
+          name: user.rows[0].name,
+          email: user.rows[0].email,
+          token: generateToken(user.rows[0].id),
+        },
       },
     });
   } else {
@@ -91,8 +101,21 @@ const loginUser = AsyncHandler(async (req, res) => {
   }
 });
 
+// @desc Get current user
+// @route Route /api/users/me
+// @access Private
+const getCurrentUser = AsyncHandler(async (req, res) => {
+  const user = {
+    id: req.user.rows[0].id,
+    name: req.user.rows[0].name,
+    email: req.user.rows[0].email,
+  };
+  res.status(200).send(user);
+});
+
 module.exports = {
   registerUser,
   loginUser,
   getUsers,
+  getCurrentUser,
 };
