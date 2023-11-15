@@ -29,20 +29,16 @@ function Register() {
 
   const registerUser = (e) => {
     e.preventDefault();
-    // Check if passwords match
-    if (password !== confirmPassword) {
-      toast.error("Passwords must match");
-    }
 
     const userData = {
       name,
       email,
       password,
     };
+
     dispatch(registerData(userData))
       .unwrap()
       .then((user) => {
-        console.log(user);
         toast.success(`New account created! (${user.body.user.email})`);
         navigate("/");
       })
