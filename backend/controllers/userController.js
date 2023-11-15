@@ -30,12 +30,19 @@ const getUsers = AsyncHandler(async (req, res) => {
 // @access Public
 const registerUser = AsyncHandler(async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
     const timestamp = new Date(Date.now()).toISOString();
 
+    // Check if form data is empty
     if (!name || !email || !password) {
       res.status(400);
       throw new Error("Fill all the required fields");
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      res.status(400);
+      throw new Error("Passwords must match");
     }
 
     // Check if user already exists
