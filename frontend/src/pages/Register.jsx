@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { FaUser } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { registerData } from "../features/auth/authSlice";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -10,7 +13,12 @@ function Register() {
     confirmPassword: "",
   });
 
+  const navigate = useNavigate();
   const { name, email, password, confirmPassword } = formData;
+
+  const dispatch = useDispatch();
+
+  const { isLoading } = useSelector((state) => state.auth);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -21,16 +29,24 @@ function Register() {
 
   const registerUser = (e) => {
     e.preventDefault();
-    // Check if inputs are empty
-    if (!password || !email || !name || !confirmPassword) {
-      toast.error("Please fill the required fields");
-    }
     // Check if passwords match
     if (password !== confirmPassword) {
       toast.error("Passwords must match");
     }
 
-    // console.log(formData);
+    const userData = {
+      name,
+      email,
+      password,
+    };
+    dispatch(registerData(userData))
+      .unwrap()
+      .then((user) => {
+        console.log(user);
+        toast.success(`New account created! (${user.body.user.email})`);
+        navigate("/");
+      })
+      .catch((error) => toast.error(error));
   };
 
   return (

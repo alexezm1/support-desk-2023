@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FaSignInAlt } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { loginData } from "../features/auth/authSlice";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -9,6 +11,12 @@ function Login() {
   });
 
   const { email, password } = formData;
+
+  const dispatch = useDispatch();
+
+  const { user, isSuccess, isLoading, isError, message } = useSelector(
+    (state) => state.auth
+  );
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -24,7 +32,12 @@ function Login() {
       toast.error("Please fill the required fields");
     }
 
-    // console.log(formData);
+    const userData = {
+      email,
+      password,
+    };
+
+    dispatch(loginData(userData));
   };
 
   return (
