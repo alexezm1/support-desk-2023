@@ -40,7 +40,7 @@ function Register() {
       .unwrap()
       .then((user) => {
         toast.success(`New account created! (${user.body.user.email})`);
-        navigate("/");
+        navigate("/login");
       })
       .catch((error) => toast.error(error));
   };
