@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
 import { loginData } from "../features/auth/authSlice";
 
 function Login() {
@@ -12,11 +14,10 @@ function Login() {
 
   const { email, password } = formData;
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isSuccess, isLoading, isError, message } = useSelector(
-    (state) => state.auth
-  );
+  const { isLoading } = useSelector((state) => state.auth);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -27,18 +28,24 @@ function Login() {
 
   const loginUser = (e) => {
     e.preventDefault();
-    // Check if inputs are empty
-    if (!password || !email) {
-      toast.error("Please fill the required fields");
-    }
 
     const userData = {
       email,
       password,
     };
 
-    dispatch(loginData(userData));
+    dispatch(loginData(userData))
+      .unwrap()
+      .then((user) => {
+        toast.success("Login successfull");
+        navigate("/");
+      })
+      .catch((error) => toast.error(error));
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
