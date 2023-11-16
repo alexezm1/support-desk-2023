@@ -85,24 +85,26 @@ const registerUser = AsyncHandler(async (req, res) => {
 // @route Route /api/users/login
 // @access Public
 const loginUser = AsyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await pool.query(checkUserEmail, [email]);
-  const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
+    const user = await pool.query(checkUserEmail, [email]);
+    const passwordMatch = await bcrypt.compare(password, user.rows[0].password);
 
-  // Check user and passwords match
-  if (user.rows.length && passwordMatch) {
-    res.status(200).json({
-      message: "Login Successfull",
-      body: {
-        user: {
-          name: user.rows[0].name,
-          email: user.rows[0].email,
-          token: generateToken(user.rows[0].id),
+    // Check user and passwords match
+    if (user.rows.length && passwordMatch) {
+      res.status(200).json({
+        message: "Login Successfull",
+        body: {
+          user: {
+            name: user.rows[0].name,
+            email: user.rows[0].email,
+            token: generateToken(user.rows[0].id),
+          },
         },
-      },
-    });
-  } else {
+      });
+    }
+  } catch (error) {
     res.status(401);
     throw new Error("Invalid credentials");
   }
