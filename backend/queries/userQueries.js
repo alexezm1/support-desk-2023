@@ -7,7 +7,7 @@ const addUser = `INSERT INTO users (name, salt, password, email, timestamp) VALU
 // TICKET QUERIES
 const getUserTicketsFromDB = "SELECT * FROM tickets WHERE id = $1";
 const createTicket =
-  "INSERT INTO tickets (user_id, product, description, timestamp) VALUES ($1, $2, $3, $4)";
+  "INSERT INTO tickets (user_id, product, description, timestamp) VALUES ($1, $2, $3, $4) RETURNING id, user_id, timestamp";
 
 // PRODUCT QUERIES
 const getProducts = "SELECT id, name FROM products";

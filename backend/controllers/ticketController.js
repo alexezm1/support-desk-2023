@@ -36,7 +36,7 @@ const getUserTickets = AsyncHandler(async (req, res) => {
 // @access Private
 const addTicket = AsyncHandler(async (req, res) => {
   try {
-    const timestamp = new Date(Date.now()).toISOString();
+    const newTimeStamp = new Date(Date.now()).toISOString();
     const { product, description } = req.body;
 
     // Get user using the id in the JWT
@@ -56,12 +56,17 @@ const addTicket = AsyncHandler(async (req, res) => {
       user.rows[0].id,
       product,
       description,
-      timestamp,
+      newTimeStamp,
     ]);
+
+    const { id, timestamp } = ticket.rows[0];
 
     res
       .status(201)
-      .json({ message: "Ticket created!", ticket: { product, description } });
+      .json({
+        message: "Ticket created!",
+        ticket: { id, product, description, timestamp },
+      });
   } catch (error) {
     throw new Error("We could not create the ticket");
   }
