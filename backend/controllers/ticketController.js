@@ -4,6 +4,7 @@ const {
   checkUserID,
   getUserTicketsFromDB,
   createTicket,
+  getUserTicketFromDB,
 } = require("../queries/userQueries");
 
 // @desc Get current user tickets
@@ -28,6 +29,38 @@ const getUserTickets = AsyncHandler(async (req, res) => {
     }
   } catch (error) {
     throw new Error("No tickets available");
+  }
+});
+
+// @desc Get current user ticket
+// @route Route GET /api/tickets/:id
+// @access Private
+const getUserTicket = AsyncHandler(async (req, res) => {
+  try {
+    // Get user using the id in the JWT
+    const user = await pool.query(checkUserID, [req.user.rows[0].id]);
+
+    if (!user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
+
+    // Get single ticket from user
+    const ticket = await pool.query(getUserTicketFromDB, [req.params.id]);
+
+    // Check if user is viewing his own tickets
+    if (ticket.rows[0].user_id !== req.user.rows[0].id) {
+      res.status(401);
+      throw new Error("Not Authorized");
+    }
+    if (ticket.rows.length > 0) {
+      res.status(200).json(ticket.rows);
+    } else {
+      res.status(404);
+      throw new Error("Ticket not found");
+    }
+  } catch (error) {
+    throw new Error(error);
   }
 });
 
@@ -61,15 +94,13 @@ const addTicket = AsyncHandler(async (req, res) => {
 
     const { id, timestamp } = ticket.rows[0];
 
-    res
-      .status(201)
-      .json({
-        message: "Ticket created!",
-        ticket: { id, product, description, timestamp },
-      });
+    res.status(201).json({
+      message: "Ticket created!",
+      ticket: { id, product, description, timestamp },
+    });
   } catch (error) {
     throw new Error("We could not create the ticket");
   }
 });
 
-module.exports = { getUserTickets, addTicket };
+module.exports = { getUserTickets, getUserTicket, addTicket };
