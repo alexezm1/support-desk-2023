@@ -140,15 +140,15 @@ const deleteTicket = AsyncHandler(async (req, res) => {
       res.status(401);
       throw new Error("Not Authorized");
     }
-    if (ticket.rows.length > 0) {
-      await pool.query(deleteTicketFromDB, [req.params.id]);
-      res.status(200).json({ success: true });
-    } else {
+
+    if (ticket.rows.length < 1) {
       res.status(404);
       throw new Error("Ticket not found");
     }
+    await pool.query(deleteTicketFromDB, [req.params.id]);
+    res.status(200).json({ success: true });
   } catch (error) {
-    throw new Error("Could not delete ticket");
+    throw new Error(`Could not delete ticket. ${error}`);
   }
 });
 
@@ -168,6 +168,15 @@ const updateTicket = AsyncHandler(async (req, res) => {
       throw new Error("User not found");
     }
 
+    // Get single ticket from user
+    const ticket = await pool.query(getUserTicketFromDB, [req.params.id]);
+
+    // Check if user is viewing his own tickets
+    if (ticket.rows[0].user_id !== req.user.rows[0].id) {
+      res.status(401);
+      throw new Error("Not Authorized");
+    }
+
     if (!product || !description) {
       res.status(400);
       throw new Error("Please add a product and description");
@@ -177,7 +186,7 @@ const updateTicket = AsyncHandler(async (req, res) => {
       product,
       description,
       updatedTimeStamp,
-      req.params.id,
+      ticket.rows[0].id,
     ]);
 
     const { id, updatedat } = updatedTicket.rows[0];
@@ -187,7 +196,7 @@ const updateTicket = AsyncHandler(async (req, res) => {
       ticket: { id, product, description, updatedat },
     });
   } catch (error) {
-    throw new Error("We could not create the ticket");
+    throw new Error(`We could not update the ticket. ${error}`);
   }
 });
 
