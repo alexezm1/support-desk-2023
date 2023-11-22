@@ -31,7 +31,7 @@ const getUsers = AsyncHandler(async (req, res) => {
 const registerUser = AsyncHandler(async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
-    const timestamp = new Date(Date.now()).toISOString();
+    const newTimeStamp = new Date(Date.now()).toISOString();
 
     // Check if form data is empty
     if (!name || !email || !password) {
@@ -62,14 +62,21 @@ const registerUser = AsyncHandler(async (req, res) => {
       salt,
       hashedPassword,
       email,
-      timestamp,
+      newTimeStamp,
     ]);
+
+    const { id, isadmin, timestamp } = user.rows[0];
 
     if (user) {
       res.status(201).json({
         message: "User Added Succesfully",
-        body: {
-          user: { name, email },
+        user: {
+          id,
+          name,
+          email,
+          isadmin,
+          timestamp,
+          token: generateToken(id),
         },
       });
     } else {
@@ -95,12 +102,10 @@ const loginUser = AsyncHandler(async (req, res) => {
     if (user.rows.length && passwordMatch) {
       res.status(200).json({
         message: "Login Successfull",
-        body: {
-          user: {
-            name: user.rows[0].name,
-            email: user.rows[0].email,
-            token: generateToken(user.rows[0].id),
-          },
+        user: {
+          name: user.rows[0].name,
+          email: user.rows[0].email,
+          token: generateToken(user.rows[0].id),
         },
       });
     } else {
