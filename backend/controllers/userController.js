@@ -103,8 +103,11 @@ const loginUser = AsyncHandler(async (req, res) => {
       res.status(200).json({
         message: "Login Successfull",
         user: {
+          id: user.rows[0].id,
           name: user.rows[0].name,
           email: user.rows[0].email,
+          isAdmin: user.rows[0].isadmin,
+          timestamp: user.rows[0].timestamp,
           token: generateToken(user.rows[0].id),
         },
       });
