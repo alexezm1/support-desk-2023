@@ -35,13 +35,14 @@ function Register() {
       name,
       email,
       password,
+      confirmPassword,
     };
 
     dispatch(registerData(userData))
       .unwrap()
       .then((user) => {
-        toast.success(`New account created! (${user.body.user.email})`);
-        navigate("/login");
+        toast.success(`New account created! (${user.user.email})`);
+        navigate("/");
       })
       .catch((error) => toast.error(error));
   };
