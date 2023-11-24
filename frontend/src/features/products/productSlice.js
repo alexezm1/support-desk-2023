@@ -4,7 +4,7 @@ import productService from "./productService";
 
 const initialState = {
   products: null,
-  isLoading: false,
+  productIsLoading: false,
 };
 
 // Get existing products
@@ -26,15 +26,15 @@ export const productSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getProductsData.pending, (state) => {
-        state.isLoading = true;
+        state.productIsLoading = true;
       })
       .addCase(getProductsData.fulfilled, (state, action) => {
         state.products = action.payload;
-        state.isLoading = false;
+        state.productIsLoading = false;
       })
       .addCase(getProductsData.rejected, (state) => {
         state.products = null;
-        state.isLoading = false;
+        state.productIsLoading = false;
       });
   },
 });
