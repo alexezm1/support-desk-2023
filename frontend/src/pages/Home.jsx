@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaQuestionCircle, FaTicketAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { reset as resetProducts } from "../features/products/productSlice";
+import { reset } from "../features/tickets/ticketSlice";
 
 function Home() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(reset());
+    dispatch(resetProducts());
+  }, [dispatch]);
   return (
     <>
       <section className="heading">

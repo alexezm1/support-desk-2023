@@ -3,6 +3,7 @@ import { FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
 import { registerData } from "../features/auth/authSlice";
 
@@ -53,6 +54,7 @@ function Register() {
 
   return (
     <>
+      <BackButton url={"/"} />
       <section className="heading">
         <h1>
           <FaUser /> Register
