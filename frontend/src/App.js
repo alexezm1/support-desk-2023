@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import MyTickets from "./pages/MyTickets";
 import NewTicket from "./pages/NewTicket";
 import Register from "./pages/Register";
+import Ticket from "./pages/Ticket";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <MyTickets />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/ticket/:ticketID"
+              element={
+                <PrivateRoute>
+                  <Ticket />
                 </PrivateRoute>
               }
             />
