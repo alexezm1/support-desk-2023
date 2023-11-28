@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import MyTickets from "./pages/MyTickets";
 import NewTicket from "./pages/NewTicket";
 import Register from "./pages/Register";
 
@@ -25,6 +26,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <NewTicket />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/tickets"
+              element={
+                <PrivateRoute>
+                  <MyTickets />
                 </PrivateRoute>
               }
             />
