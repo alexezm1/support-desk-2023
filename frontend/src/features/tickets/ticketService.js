@@ -38,10 +38,29 @@ const fetchTicket = async (ticketID, token) => {
   return response.data[0];
 };
 
+// Close ticket
+const updateTicket = async (ticketData, token) => {
+  const { ticketID } = ticketData;
+  delete ticketData.ticketID;
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.put(
+    `${API_URL}/${ticketID}`,
+    ticketData,
+    config
+  );
+  return response.data.ticket;
+};
+
 const ticketService = {
   create,
   fetchTickets,
   fetchTicket,
+  updateTicket,
 };
 
 export default ticketService;

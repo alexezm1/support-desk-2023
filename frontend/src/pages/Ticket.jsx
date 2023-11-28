@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
-import { getTicket } from "../features/tickets/ticketSlice";
+import { closeTicket, getTicket } from "../features/tickets/ticketSlice";
 
 function Ticket() {
   const { ticket, ticketIsLoading } = useSelector((state) => state.ticket);
@@ -22,6 +22,22 @@ function Ticket() {
         navigate("/tickets");
       });
   }, [dispatch, ticketID, navigate]);
+
+  const onTicketClose = () => {
+    const updatedTicketData = {
+      product,
+      description,
+      newStatus: "Closed",
+      ticketID,
+    };
+    dispatch(closeTicket(updatedTicketData))
+      .unwrap()
+      .then(() => {
+        toast.success("Ticket closed");
+        navigate("/tickets");
+      })
+      .catch((error) => toast.error(error));
+  };
 
   if (ticketIsLoading) {
     return <Spinner />;
@@ -46,6 +62,12 @@ function Ticket() {
             <p>{description}</p>
           </div>
         </header>
+
+        {status !== "Closed" && (
+          <button onClick={onTicketClose} className="btn btn-block btn-danger">
+            Close Ticket
+          </button>
+        )}
       </div>
     </>
   );

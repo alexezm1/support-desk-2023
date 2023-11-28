@@ -12,7 +12,7 @@ const createTicket =
   "INSERT INTO tickets (user_id, product, description, timestamp) VALUES ($1, $2, $3, $4) RETURNING id, user_id, timestamp";
 const deleteTicketFromDB = "DELETE FROM tickets WHERE id = $1";
 const updateUserTicketFromDB =
-  "UPDATE tickets SET product = $1, description = $2, updatedAt = $3 WHERE id = $4 RETURNING *";
+  "UPDATE tickets SET product = $1, description = $2, status = $3, updatedat = $4 WHERE id = $5 RETURNING *";
 
 // PRODUCT QUERIES
 const getProducts = "SELECT id, name FROM products";

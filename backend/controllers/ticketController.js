@@ -158,7 +158,7 @@ const deleteTicket = AsyncHandler(async (req, res) => {
 const updateTicket = AsyncHandler(async (req, res) => {
   try {
     const updatedTimeStamp = new Date(Date.now()).toISOString();
-    const { product, description } = req.body;
+    const { product, description, newStatus } = req.body;
 
     // Get user using the id in the JWT
     const user = await pool.query(checkUserID, [req.user.rows[0].id]);
@@ -185,15 +185,16 @@ const updateTicket = AsyncHandler(async (req, res) => {
     const updatedTicket = await pool.query(updateUserTicketFromDB, [
       product,
       description,
+      newStatus,
       updatedTimeStamp,
       ticket.rows[0].id,
     ]);
 
-    const { id, updatedat } = updatedTicket.rows[0];
+    const { id, updatedat, status } = updatedTicket.rows[0];
 
     res.status(201).json({
       message: "Ticket updated!",
-      ticket: { id, product, description, updatedat },
+      ticket: { id, product, description, status, updatedat },
     });
   } catch (error) {
     throw new Error(`We could not update the ticket. ${error}`);
