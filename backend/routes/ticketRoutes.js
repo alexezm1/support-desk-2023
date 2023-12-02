@@ -1,5 +1,6 @@
 const Router = require("express");
 const { protectRoutes } = require("../middleware/auth.js");
+const { noteRoutes } = require("./noteRoutes.js");
 const {
   getUserTickets,
   addTicket,
@@ -10,6 +11,9 @@ const {
 } = require("../controllers/ticketController.js");
 
 const ticketRoutes = Router();
+
+// Re-route into note Router
+ticketRoutes.use("/:ticketId/notes", noteRoutes);
 
 ticketRoutes.get("/all", getTickets);
 ticketRoutes.get("/", protectRoutes, getUserTickets);
