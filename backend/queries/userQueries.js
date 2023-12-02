@@ -17,6 +17,11 @@ const updateUserTicketFromDB =
 // PRODUCT QUERIES
 const getProducts = "SELECT id, name FROM products";
 
+// NOTE QUERIES
+const getNotesFromTicket = "SELECT * FROM notes WHERE ticket_id = $1";
+const addNoteToTicket =
+  "INSERT INTO notes (user_id, ticket_id, note_text, isStaff, timestamp) VALUES($1, $2, $3, $4, $5) RETURNING *";
+
 module.exports = {
   checkUserEmail,
   addUser,
@@ -29,4 +34,6 @@ module.exports = {
   deleteTicketFromDB,
   updateUserTicketFromDB,
   getProducts,
+  getNotesFromTicket,
+  addNoteToTicket,
 };

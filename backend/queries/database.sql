@@ -18,6 +18,16 @@ CREATE TABLE IF NOT EXISTS tickets(
     timestamp TIMESTAMP NOT NULL
 )
 
+CREATE TABLE IF NOT EXISTS notes(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users,
+    ticket_id UUID REFERENCES ticket(id),
+	note_text VARCHAR(255) NOT NULL,
+    isStaff BOOLEAN DEFAULT FALSE,
+    staff_id UUID,
+    timestamp TIMESTAMP NOT NULL
+)
+
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
