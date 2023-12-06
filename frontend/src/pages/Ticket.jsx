@@ -1,14 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import ReactModal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import BackButton from "../components/BackButton";
 import NoteItem from "../components/NoteItem";
 import Spinner from "../components/Spinner";
-import { getNotes, reset as resetNotes } from "../features/notes/noteSlice";
+import {
+  createNotes,
+  getNotes,
+  reset as resetNotes,
+} from "../features/notes/noteSlice";
 import { closeTicket, getTicket } from "../features/tickets/ticketSlice";
 
+const modalCustomStyles = {
+  content: {
+    width: "600px",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    position: "relative",
+  },
+};
+
+ReactModal.setAppElement("#root");
+
 function Ticket() {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [noteText, setNoteText] = useState("");
   const { ticket, ticketIsLoading } = useSelector((state) => state.ticket);
   const { notes, noteIsLoading } = useSelector((state) => state.notes);
   const dispatch = useDispatch();
@@ -18,6 +41,7 @@ function Ticket() {
   const { id, product, description, status, timestamp, updatedat } = ticket;
 
   useEffect(() => {
+    setModalIsOpen(false);
     dispatch(resetNotes());
     dispatch(getTicket(ticketID))
       .unwrap()
@@ -44,11 +68,30 @@ function Ticket() {
       .catch((error) => toast.error(error));
   };
 
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const addNote = (e) => {
+    e.preventDefault();
+
+    const noteData = {
+      ticketID,
+      note_text: noteText,
+    };
+    dispatch(createNotes(noteData));
+    setNoteText("");
+    closeModal();
+  };
+
   if (ticketIsLoading || noteIsLoading) {
     return <Spinner />;
   }
 
-  console.log(notes);
   return (
     <>
       <div className="ticket-page">
@@ -70,6 +113,41 @@ function Ticket() {
           </div>
           {notes.length > 0 && <h2>Notes</h2>}
         </header>
+
+        {status !== "Closed" && (
+          <button onClick={openModal} className="btn">
+            <FaPlus /> Add Note
+          </button>
+        )}
+
+        <ReactModal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          style={modalCustomStyles}
+          contentLabel="Add Note"
+        >
+          <h2>Add Note</h2>
+          <button onClick={closeModal} className="btn-close">
+            X
+          </button>
+          <form onSubmit={addNote}>
+            <div className="form-group">
+              <textarea
+                name="noteText"
+                id="noteText"
+                className="form-control"
+                placeholder="Note text"
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <button type="submit" className="btn">
+                Submit
+              </button>
+            </div>
+          </form>
+        </ReactModal>
 
         {notes.map((note) => (
           <NoteItem key={note.id} note={note} />
